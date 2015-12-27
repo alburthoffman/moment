@@ -77,6 +77,7 @@ test('string with bad month name', function (assert) {
 
 test('string with spaceless format', function (assert) {
     assert.equal(moment('10Sep2001', 'DDMMMYYYY').isValid(), true, 'Parsing 10Sep2001 should result in a valid date');
+    assert.equal(moment('10Sept2001', 'DDMMMYYYY').isValid(), true, 'Parsing 10Sept2001 should result in a valid date');
 });
 
 test('invalid string iso 8601', function (assert) {
@@ -90,8 +91,8 @@ test('invalid string iso 8601', function (assert) {
     ], i;
 
     for (i = 0; i < tests.length; i++) {
-        assert.equal(moment(tests[i]).isValid(), false, tests[i] + ' should be invalid');
-        assert.equal(moment.utc(tests[i]).isValid(), false, tests[i] + ' should be invalid');
+        assert.equal(moment(tests[i], moment.ISO_8601).isValid(), false, tests[i] + ' should be invalid');
+        assert.equal(moment.utc(tests[i], moment.ISO_8601).isValid(), false, tests[i] + ' should be invalid');
     }
 });
 
@@ -103,12 +104,33 @@ test('invalid string iso 8601 + timezone', function (assert) {
         '2010-01-40T24:01+00:00',
         '2010-01-40T23:60+00:00',
         '2010-01-40T23:59:60+00:00',
-        '2010-01-40T23:59:59.9999+00:00'
+        '2010-01-40T23:59:59.9999+00:00',
+        '2010-01-40T23:59:59,9999+00:00'
     ], i;
 
     for (i = 0; i < tests.length; i++) {
-        assert.equal(moment(tests[i]).isValid(), false, tests[i] + ' should be invalid');
-        assert.equal(moment.utc(tests[i]).isValid(), false, tests[i] + ' should be invalid');
+        assert.equal(moment(tests[i], moment.ISO_8601).isValid(), false, tests[i] + ' should be invalid');
+        assert.equal(moment.utc(tests[i], moment.ISO_8601).isValid(), false, tests[i] + ' should be invalid');
+    }
+});
+
+test('valid string iso 8601 - not strict', function (assert) {
+    var tests = [
+        '2010-01-30 00:00:00,000Z',
+        '20100101',
+        '20100130',
+        '20100130T23+00:00',
+        '20100130T2359+0000',
+        '20100130T235959+0000',
+        '20100130T235959,999+0000',
+        '20100130T235959,999-0700',
+        '20100130T000000,000+0700',
+        '20100130 000000,000Z'
+    ];
+
+    for (var i = 0; i < tests.length; i++) {
+        assert.equal(moment(tests[i]).isValid(), true, tests[i] + ' should be valid in normal');
+        assert.equal(moment.utc(tests[i]).isValid(), true, tests[i] + ' should be valid in normal');
     }
 });
 
@@ -122,6 +144,8 @@ test('valid string iso 8601 + timezone', function (assert) {
         '2010-01-30T23:59:59.999+00:00',
         '2010-01-30T23:59:59.999-07:00',
         '2010-01-30T00:00:00.000+07:00',
+        '2010-01-30T23:59:59.999-07',
+        '2010-01-30T00:00:00.000+07',
         '2010-01-30 00:00:00.000Z'
     ], i;
 

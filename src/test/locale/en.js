@@ -4,7 +4,7 @@ localeModule('en');
 
 test('parse', function (assert) {
     var i,
-        tests = 'January Jan_February Feb_March Mar_April Apr_May May_June Jun_July Jul_August Aug_September Sep_October Oct_November Nov_December Dec'.split('_');
+        tests = 'January Jan_February Feb_March Mar_April Apr_May May_June Jun_July Jul_August Aug_September Sept_October Oct_November Nov_December Dec'.split('_');
 
     function equalTest(input, mmm, i) {
         assert.equal(moment(input, mmm).month(), i, input + ' should be month ' + (i + 1));
@@ -96,7 +96,7 @@ test('format ordinal', function (assert) {
 
 test('format month', function (assert) {
     var i,
-        expected = 'January Jan_February Feb_March Mar_April Apr_May May_June Jun_July Jul_August Aug_September Sep_October Oct_November Nov_December Dec'.split('_');
+        expected = 'January Jan_February Feb_March Mar_April Apr_May May_June Jun_July Jul_August Aug_September Sept_October Oct_November Nov_December Dec'.split('_');
 
     for (i = 0; i < expected.length; i++) {
         assert.equal(moment([2011, i, 1]).format('MMMM MMM'), expected[i], expected[i]);
@@ -290,6 +290,21 @@ test('lenient ordinal parsing', function (assert) {
                 'lenient ordinal parsing ' + i + ' month check');
         assert.equal(testMoment.date(), i,
                 'lenient ordinal parsing ' + i + ' date check');
+    }
+});
+
+test('weekdays strict parsing', function (assert) {
+    var m = moment('2015-01-01T12', moment.ISO_8601, true),
+        enLocale = moment.localeData('en');
+
+    for (var i = 0; i < 7; ++i) {
+        assert.equal(moment(enLocale.weekdays(m.day(i), ''), 'dddd', true).isValid(), true, 'parse weekday ' + i);
+        assert.equal(moment(enLocale.weekdaysShort(m.day(i), ''), 'ddd', true).isValid(), true, 'parse short weekday ' + i);
+        assert.equal(moment(enLocale.weekdaysMin(m.day(i), ''), 'dd', true).isValid(), true, 'parse min weekday ' + i);
+
+        // negative tests
+        assert.equal(moment(enLocale.weekdaysMin(m.day(i), ''), 'ddd', true).isValid(), false, 'parse short weekday ' + i);
+        assert.equal(moment(enLocale.weekdaysShort(m.day(i), ''), 'dd', true).isValid(), false, 'parse min weekday ' + i);
     }
 });
 
