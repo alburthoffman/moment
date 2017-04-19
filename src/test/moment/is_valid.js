@@ -77,7 +77,6 @@ test('string with bad month name', function (assert) {
 
 test('string with spaceless format', function (assert) {
     assert.equal(moment('10Sep2001', 'DDMMMYYYY').isValid(), true, 'Parsing 10Sep2001 should result in a valid date');
-    assert.equal(moment('10Sept2001', 'DDMMMYYYY').isValid(), true, 'Parsing 10Sept2001 should result in a valid date');
 });
 
 test('invalid string iso 8601', function (assert) {
@@ -263,10 +262,10 @@ test('24:00:00.000 is valid', function (assert) {
 });
 
 test('oddball permissiveness', function (assert) {
-    //https://github.com/moment/moment/issues/1128
+    // https://github.com/moment/moment/issues/1128
     assert.ok(moment('2010-10-3199', ['MM/DD/YYYY', 'MM-DD-YYYY', 'YYYY-MM-DD']).isValid());
 
-    //https://github.com/moment/moment/issues/1122
+    // https://github.com/moment/moment/issues/1122
     assert.ok(moment('3:25', ['h:mma', 'hh:mma', 'H:mm', 'HH:mm']).isValid());
 });
 

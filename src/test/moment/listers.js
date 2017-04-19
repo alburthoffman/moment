@@ -5,7 +5,7 @@ module('listers');
 
 test('default', function (assert) {
     assert.deepEqual(moment.months(), ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']);
-    assert.deepEqual(moment.monthsShort(), ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec']);
+    assert.deepEqual(moment.monthsShort(), ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']);
     assert.deepEqual(moment.weekdays(), ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']);
     assert.deepEqual(moment.weekdaysShort(), ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']);
     assert.deepEqual(moment.weekdaysMin(), ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']);
@@ -29,14 +29,22 @@ test('localized', function (assert) {
         monthsShort = 'on_tw_th_fo_fi_si_se_ei_ni_te_el_tw'.split('_'),
         weekdays = 'one_two_three_four_five_six_seven'.split('_'),
         weekdaysShort = 'on_tw_th_fo_fi_si_se'.split('_'),
-        weekdaysMin = '1_2_3_4_5_6_7'.split('_');
+        weekdaysMin = '1_2_3_4_5_6_7'.split('_'),
+        weekdaysLocale = 'four_five_six_seven_one_two_three'.split('_'),
+        weekdaysShortLocale = 'fo_fi_si_se_on_tw_th'.split('_'),
+        weekdaysMinLocale = '4_5_6_7_1_2_3'.split('_'),
+        week = {
+            dow : 3,
+            doy : 6
+        };
 
     moment.locale('numerologists', {
         months : months,
         monthsShort : monthsShort,
         weekdays : weekdays,
         weekdaysShort: weekdaysShort,
-        weekdaysMin: weekdaysMin
+        weekdaysMin: weekdaysMin,
+        week : week
     });
 
     assert.deepEqual(moment.months(), months);
@@ -56,6 +64,18 @@ test('localized', function (assert) {
     assert.equal(moment.weekdays(2), 'three');
     assert.equal(moment.weekdaysShort(2), 'th');
     assert.equal(moment.weekdaysMin(2), '3');
+
+    assert.deepEqual(moment.weekdays(true), weekdaysLocale);
+    assert.deepEqual(moment.weekdaysShort(true), weekdaysShortLocale);
+    assert.deepEqual(moment.weekdaysMin(true), weekdaysMinLocale);
+
+    assert.equal(moment.weekdays(true, 0), 'four');
+    assert.equal(moment.weekdaysShort(true, 0), 'fo');
+    assert.equal(moment.weekdaysMin(true, 0), '4');
+
+    assert.equal(moment.weekdays(false, 2), 'three');
+    assert.equal(moment.weekdaysShort(false, 2), 'th');
+    assert.equal(moment.weekdaysMin(false, 2), '3');
 });
 
 test('with functions', function (assert) {
@@ -77,4 +97,27 @@ test('with functions', function (assert) {
     assert.deepEqual(moment.monthsShort('MMM', 2), 'three');
     assert.deepEqual(moment.monthsShort('-MMM-', 2), 'threesy');
     assert.deepEqual(moment.monthsShort(2), 'three');
+});
+
+test('with locale data', function (assert) {
+    var months = 'one_two_three_four_five_six_seven_eight_nine_ten_eleven_twelve'.split('_'),
+        monthsShort = 'on_tw_th_fo_fi_si_se_ei_ni_te_el_tw'.split('_'),
+        weekdays = 'one_two_three_four_five_six_seven'.split('_'),
+        weekdaysShort = 'on_tw_th_fo_fi_si_se'.split('_'),
+        weekdaysMin = '1_2_3_4_5_6_7'.split('_'),
+        weekdaysLocale = 'four_five_six_seven_one_two_three'.split('_'),
+        weekdaysShortLocale = 'fo_fi_si_se_on_tw_th'.split('_'),
+        weekdaysMinLocale = '4_5_6_7_1_2_3'.split('_'),
+        week = {
+            dow : 3,
+            doy : 6
+        };
+
+    var customLocale = moment.localeData('numerologists');
+
+    assert.deepEqual(customLocale.months(), months);
+    assert.deepEqual(customLocale.monthsShort(), monthsShort);
+    assert.deepEqual(customLocale.weekdays(), weekdays);
+    assert.deepEqual(customLocale.weekdaysShort(), weekdaysShort);
+    assert.deepEqual(customLocale.weekdaysMin(), weekdaysMin);
 });

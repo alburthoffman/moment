@@ -1,14 +1,15 @@
+import { hooks } from '../utils/hooks';
 import { createDate, createUTCDate } from './date-from-array';
 import { daysInYear } from '../units/year';
 import { weekOfYear, weeksInYear, dayOfYearFromWeeks } from '../units/week-calendar-utils';
 import { YEAR, MONTH, DATE, HOUR, MINUTE, SECOND, MILLISECOND } from '../units/constants';
 import { createLocal } from './local';
-import { Moment } from '../moment/constructor';
 import defaults from '../utils/defaults';
 import getParsingFlags from './parsing-flags';
 
 function currentDateArray(config) {
-    var nowValue = new Date(Moment.prototype.now());
+    // hooks is actually the exported moment object
+    var nowValue = new Date(hooks.now());
     if (config._useUTC) {
         return [nowValue.getUTCFullYear(), nowValue.getUTCMonth(), nowValue.getUTCDate()];
     }
@@ -34,10 +35,10 @@ export function configFromArray (config) {
     }
 
     //if the day of the year is set, figure out what it is
-    if (config._dayOfYear) {
+    if (config._dayOfYear != null) {
         yearToUse = defaults(config._a[YEAR], currentDate[YEAR]);
 
-        if (config._dayOfYear > daysInYear(yearToUse)) {
+        if (config._dayOfYear > daysInYear(yearToUse) || config._dayOfYear === 0) {
             getParsingFlags(config)._overflowDayOfYear = true;
         }
 
@@ -103,8 +104,12 @@ function dayOfYearFromWeekInfo(config) {
         dow = config._locale._week.dow;
         doy = config._locale._week.doy;
 
-        weekYear = defaults(w.gg, config._a[YEAR], weekOfYear(createLocal(), dow, doy).year);
-        week = defaults(w.w, 1);
+        var curWeek = weekOfYear(createLocal(), dow, doy);
+
+        weekYear = defaults(w.gg, config._a[YEAR], curWeek.year);
+
+        // Default to current week.
+        week = defaults(w.w, curWeek.week);
 
         if (w.d != null) {
             // weekday -- low day numbers are considered next week
